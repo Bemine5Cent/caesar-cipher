@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caesar Cipher</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row justify-content-left">
+      <div class="col-md-6">
+        <h1 class="text-left">Caesar Cipher</h1>
+        <div class="card-body">
+          <ul class="nav nav-tabs mb-3" id="cipherTabs">
+            <li class="nav-item">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#encrypt-tab">Encrypt</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#decrypt-tab">Decrypt</button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="encrypt-tab">
+              <form onsubmit="processCipher(event, 'encrypt')">
+                <div class="mb-3">
+                  <label for="plainText" class="form-label">Plain Text:</label>
+                  <input type="text" class="form-control" id="plainText" required>
+                </div>
+                <div class="mb-3">
+                  <label for="shift" class="form-label">Shift:</label>
+                  <input type="number" class="form-control" id="shift" required>
+                </div>
+                <div class="mb-3">
+                  <label for="cipherText" class="form-label">Cipher Text:</label>
+                  <input type="text" class="form-control" id="cipherText" disabled>
+                </div>
+                <div class="d-flex justify-content-center">
+                  <button type="submit" class="btn btn-danger">Encrypt</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="tab-pane fade" id="decrypt-tab">
+              <form onsubmit="processCipher(event, 'decrypt')">
+                <div class="mb-3">
+                  <label for="cipherTextDecrypt" class="form-label">Cipher Text:</label>
+                  <input type="text" class="form-control" id="cipherTextDecrypt" required>
+                </div>
+                <div class="mb-3">
+                  <label for="shiftDecrypt" class="form-label">Shift:</label>
+                  <input type="number" class="form-control" id="shiftDecrypt" required>
+                </div>
+                <div class="mb-3">
+                  <label for="plainTextDecrypt" class="form-label">Plain Text:</label>
+                  <input type="text" class="form-control" id="plainTextDecrypt" disabled>
+                </div>
+                <div class="d-flex justify-content-center">
+                  <button type="submit" class="btn btn-danger">Decrypt</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function caesarCipher(text, shift, operation) {
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      const isEncrypt = operation === 'encrypt';
+      shift = isEncrypt ? shift : -shift;
+      shift = (shift % 26 + 26) % 26; 
+
+      return text.split('').map(char => {
+        const isUpperCase = char === char.toUpperCase();
+        const lowerChar = char.toLowerCase();
+        if (!alphabet.includes(lowerChar)) {
+          return char; 
+        }
+        const newIndex = (alphabet.indexOf(lowerChar) + shift) % 26;
+        const newChar = alphabet[newIndex];
+        return isUpperCase ? newChar.toUpperCase() : newChar;
+      }).join('');
+    }
+
+    function processCipher(event, operation) {
+      event.preventDefault();
+
+      if (operation === 'encrypt') {
+        const plainText = document.getElementById('plainText').value;
+        const shift = parseInt(document.getElementById('shift').value);
+
+        if (isNaN(shift)) {
+          alert('Shift value must be a number.');
+          return;
+        }
+
+        const cipherText = caesarCipher(plainText, shift, 'encrypt');
+        document.getElementById('cipherText').value = cipherText;
+      } else if (operation === 'decrypt') {
+        const cipherText = document.getElementById('cipherTextDecrypt').value;
+        const shift = parseInt(document.getElementById('shiftDecrypt').value);
+
+        if (isNaN(shift)) {
+          alert('Shift value must be a number.');
+          return;
+        }
+
+        const plainText = caesarCipher(cipherText, shift, 'decrypt');
+        document.getElementById('plainTextDecrypt').value = plainText;
+      }
+    }
+  </script>
+</body>
+</html>
